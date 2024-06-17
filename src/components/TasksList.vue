@@ -31,9 +31,9 @@
                                 <td class="text-center px-4 py-2">
     <li v-for="t in task.time">{{ t.date }} {{t.hour  }}</li> </td>
     <td class="px-4 py-2 text-center">
-        <button @click="editTask(index)" class="text-blue-500 mr-2">✏️</button>
+        <button @click="editTask(index);currentTab = 'editTask';" class="text-blue-500 mr-2">✏️</button>
         <button @click="deleteTask(index)" class="text-red-500 mr-2">🗑️</button>
-        <button @click="saveTask(index)" class="text-green-500">💾</button>
+
     </td>
     </tr>
 
@@ -43,9 +43,68 @@
     <div v-if="currentTab === 'addTask'">
         <h2 class="text-2xl mb-4">Добавление задачи</h2>
         <ul>
-            <TextElement label="Label" :columns="{ container: 12, label: 4, wrapper: 12 }" />
-            <TextElement label="Label" :columns="{ container: 12, label: 4, wrapper: 6 }" />
+            <label for="name">Название задачи:    </label>
+            <input type="text"
+                   v-model="newTask.name"
+                   class=" px-3 py-1 mt-2 border border-gray-300 rounded-lg"
+                   required />
         </ul>
+        <ul>
+            <label for="name">Название проекта:    </label>
+            <input type="text"
+                   v-model="newTask.name_project"
+                   class=" px-3 py-1 mt-2 border border-gray-300 rounded-lg"
+                   required />
+        </ul>
+        <ul>
+            <label for="name">Активен:    </label>
+            <input type="checkbox" v-model="newTask.active" class="mt-4" />
+        </ul>
+        <nav class="flex space-x-4 mb-4">
+            <button @click="addTask();currentTab = 'tasks';"
+                    :class="{'text-blue-500': currentTab === 'tasks', 'bg-blue-300 text-white': currentTab !== 'tasks'}"
+                    class="px-4 py-2 rounded mb-2 mt-4 space-x-4">
+                Сохранить
+            </button>
+            <button @click="currentTab = 'tasks'"
+                    :class="{'text-blue-500': currentTab === 'tasks', 'bg-blue-300 text-white': currentTab !== 'tasks'}"
+                    class="px-7 py-2 rounded mb-2 mt-4 ">
+                Отмена
+            </button>
+        </nav>
+    </div>
+    <div v-if="currentTab === 'editTask'">
+        <h2 class="text-2xl mb-4">Редактирование задачи</h2>
+        <ul>
+            <label for="name">Название задачи:    </label>
+            <input type="text"
+                   v-model="newTask.name"
+                   class=" px-3 py-1 mt-2 border border-gray-300 rounded-lg" placeholder=""
+                   required />
+        </ul>
+        <ul>
+            <label for="name">Название проекта:    </label>
+            <input type="text"
+                   v-model="newTask.name_project"
+                   class=" px-3 py-1 mt-2 border border-gray-300 rounded-lg"
+                   required />
+        </ul>
+        <ul>
+            <label for="name">Активен:    </label>
+            <input type="checkbox" v-model="newTask.active" class="mt-4" />
+        </ul>
+        <nav class="flex space-x-4 mb-4">
+            <button @click="addTask();currentTab = 'tasks';"
+                    :class="{'text-blue-500': currentTab === 'tasks', 'bg-blue-300 text-white': currentTab !== 'tasks'}"
+                    class="px-4 py-2 rounded mb-2 mt-4 space-x-4">
+                Сохранить
+            </button>
+            <button @click="currentTab = 'tasks'"
+                    :class="{'text-blue-500': currentTab === 'tasks', 'bg-blue-300 text-white': currentTab !== 'tasks'}"
+                    class="px-7 py-2 rounded mb-2 mt-4 ">
+                Отмена
+            </button>
+        </nav>
     </div>
     </main>
     </div>
@@ -56,7 +115,12 @@
   export default {
     data() {
       return {
+          ed: {
+             type: Number,
+             default: 0
+    },
           currentTab: 'tasks',
+
 
         tasks: [
             { name: 'Название1', name_project: 'Проект1', active: true, time: [{ date: '01.01.2024', hour: '02:30' }, { date: '02.01.2024', hour: '08:30' }] },
@@ -69,10 +133,12 @@
       };
     },
     methods: {
+
         addTask() {
-            if (this.newTask.name && this.newTask.code) {
-          this.projects.push({ ...this.newProject });
-                this.newProject = { name: '', name_project: '', active: false, time: [] };
+            if (this.newTask.name && this.newTask.name_project) {
+          this.tasks.push({ ...this.newTask });
+                this.newTask = { name: '', name_project: '', active: false, time: [] };
+                
         }
       },
         editTask(index) {
