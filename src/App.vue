@@ -2,6 +2,7 @@
   <div id="app">
     <ProjectsList />
   </div>
+  
 </template>
 
 <script>
@@ -11,6 +12,7 @@ export default {
   name: 'App',
   components: {
     ProjectsList
+    
   }
 };
 </script>
