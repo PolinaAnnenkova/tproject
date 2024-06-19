@@ -2,9 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import MainPageVue from '../components/MainPage.vue';
 
 const routes = [
-  {
-   
-  },
+  
   {
     path: '/tasks',
     name: 'tasks',
@@ -19,6 +17,12 @@ const routes = [
     path: '/transactions',
     name: 'transactions',
     component: () => import(/* webpackChunkName: "transactions" */ '../components/TasksComponent.vue')
+    }
+    ,
+  {
+        path: '/employee',
+        name: 'employee',
+        component: () => import(/* webpackChunkName: "tasks" */ '../components/Employee.vue')
   }
 ];
 

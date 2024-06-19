@@ -19,7 +19,7 @@
                                 <th class="text-white w-1/3 px-4 py-2">Название задачи</th>
                                 <th class="text-white w-1/6 px-4 py-2">Проект</th>
                                 <th class="text-white w-1/6 px-4 py-2">Активный</th>
-                                <th class="text-white w-1/6 px-4 py-2">Проводки</th>
+                                
                                 <th class="text-white w-1/3 px-4 py-2 text-center">Действия</th>
                             </tr>
                         </thead>
@@ -28,8 +28,7 @@
                                 <td class="text-center px-4 py-2">{{ task.name }}</td>
                                 <td class="text-center px-4 py-2">{{ task.name_project }}</td>
                                 <td class="text-center px-4 py-2">{{ task.active ? 'Да' : 'Нет' }}</td>
-                                <td class="text-center px-4 py-2">
-    <li v-for="t in task.time">{{ t.date }} {{t.hour  }}</li> </td>
+                                
     <td class="px-4 py-2 text-center">
         <button @click="editTask(index);currentTab = 'editTask';" class="text-blue-500 mr-2">✏️</button>
         <button @click="deleteTask(index)" class="text-red-500 mr-2">🗑️</button>
@@ -123,13 +122,13 @@
 
 
         tasks: [
-            { name: 'Название1', name_project: 'Проект1', active: true, time: [{ date: '01.01.2024', hour: '02:30' }, { date: '02.01.2024', hour: '08:30' }] },
-            { name: 'Название2', name_project: 'Проект1', active: true, time: [] },
-            { name: 'Название3', name_project: 'Проект2', active: true, time: [{ date: '05.05.2024', hour: '02:14' }] },
-            { name: 'Название4', name_project: 'Проект3', active: false, time: [{ date: '06.06.2024', hour: '06:45' }, { date: '07.06.2024', hour: '03:25' }]},
-            { name: 'Название5', name_project: 'Проект3', active: true, time: [{ date: '08.06.2024', hour: '01:10' }]},
+            { name: 'Название1', name_project: 'Проект1', active: true },
+            { name: 'Название2', name_project: 'Проект1', active: true},
+            { name: 'Название3', name_project: 'Проект2', active: true },
+            { name: 'Название4', name_project: 'Проект3', active: false},
+            { name: 'Название5', name_project: 'Проект3', active: true},
         ],
-          newTask: { name: '', name_project: '', active: false, time: []}
+          newTask: { name: '', name_project: '', active: false}
       };
     },
     methods: {
@@ -137,7 +136,7 @@
         addTask() {
             if (this.newTask.name && this.newTask.name_project) {
           this.tasks.push({ ...this.newTask });
-                this.newTask = { name: '', name_project: '', active: false, time: [] };
+                this.newTask = { name: '', name_project: '', active: false };
                 
         }
       },
@@ -150,7 +149,7 @@
       },
         saveTask(index) {
             this.tasks.splice(index, 1, this.newTask);
-            this.newProject = { name: '', name_project: '', active: false, time: [] };
+            this.newProject = { name: '', name_project: '', active: false };
       }
     }
   };
