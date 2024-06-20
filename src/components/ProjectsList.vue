@@ -50,6 +50,9 @@
               </tr>
             </tbody>
           </table>
+          <div v-if="errorMessage" class="mt-4 text-red-500">
+            {{ errorMessage }}
+          </div>
         </div>
       </main>
     </div>
@@ -70,12 +73,29 @@ export default {
       ],
       newProject: { name: '', code: '', active: false },
       editingIndex: null,
-      editProjectData: { name: '', code: '', active: false }
+      editProjectData: { name: '', code: '', active: false },
+      errorMessage: ''
     };
   },
   methods: {
+    validateProjectData(project) {
+      if (!project.name || !project.code) {
+        this.errorMessage = 'Название и код проекта не могут быть пустыми.';
+        return false;
+      }
+      if (isNaN(project.code)) {
+        this.errorMessage = 'Код проекта должен быть числом.';
+        return false;
+      }
+      if (typeof project.name !== 'string') {
+        this.errorMessage = 'Название проекта должно быть текстом.';
+        return false;
+      }
+      this.errorMessage = '';
+      return true;
+    },
     addProject() {
-      if (this.newProject.name && this.newProject.code) {
+      if (this.validateProjectData(this.newProject)) {
         this.projects.push({ ...this.newProject });
         this.newProject = { name: '', code: '', active: false };
       }
@@ -85,7 +105,7 @@ export default {
       this.editProjectData = { ...this.projects[index] };
     },
     saveProject(index) {
-      if (this.editProjectData.name && this.editProjectData.code) {
+      if (this.validateProjectData(this.editProjectData)) {
         this.projects.splice(index, 1, this.editProjectData);
         this.cancelEdit();
       }
@@ -96,6 +116,7 @@ export default {
     cancelEdit() {
       this.editingIndex = null;
       this.editProjectData = { name: '', code: '', active: false };
+      this.errorMessage = '';
     }
   }
 };

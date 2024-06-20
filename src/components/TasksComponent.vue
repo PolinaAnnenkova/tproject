@@ -34,7 +34,7 @@
             <tbody>
               <tr v-for="(transaction, index) in filteredTransactions" :key="index" :class="transactionClass(transaction.hours)">
                 <td class="px-4 py-2">
-                  <input v-if="editingIndex === index" v-model="editTransactionData.date" class="w-full px-2 py-1 border rounded" />
+                  <input type="date" v-if="editingIndex === index" v-model="editTransactionData.date" class="w-full px-2 py-1 border rounded" />
                   <span v-else>{{ transaction.date }}</span>
                 </td>
                 <td class="px-4 py-2">
@@ -58,7 +58,7 @@
               </tr>
               <tr :class="transactionClass(newTransaction.hours)">
                 <td class="px-4 py-2">
-                  <input v-model="newTransaction.date" class="w-full px-2 py-1 border rounded" placeholder="Дата" />
+                  <input type="date" v-model="newTransaction.date" class="w-full px-2 py-1 border rounded" placeholder="Дата" />
                 </td>
                 <td class="px-4 py-2">
                   <input v-model="newTransaction.hours" class="w-full px-2 py-1 border rounded" placeholder="Количество часов" />
@@ -75,6 +75,9 @@
               </tr>
             </tbody>
           </table>
+          <div v-if="errorMessage" class="mt-4 text-red-500">
+            {{ errorMessage }}
+          </div>
         </div>
       </main>
     </div>
@@ -98,7 +101,8 @@ export default {
       ],
       newTransaction: { date: '', hours: '', description: '', task: '' },
       editingIndex: null,
-      editTransactionData: { date: '', hours: '', description: '', task: '' }
+      editTransactionData: { date: '', hours: '', description: '', task: '' },
+      errorMessage: ''
     };
   },
   computed: {
@@ -118,8 +122,25 @@ export default {
     }
   },
   methods: {
+    validateTransactionData(transaction) {
+      const currentDate = new Date().toISOString().split('T')[0];
+      if (!transaction.date || !transaction.hours || !transaction.description || !transaction.task) {
+        this.errorMessage = 'Все поля должны быть заполнены.';
+        return false;
+      }
+      if (new Date(transaction.date) > new Date(currentDate)) {
+        this.errorMessage = 'Дата не может быть в будущем.';
+        return false;
+      }
+      if (isNaN(transaction.hours) || transaction.hours < 0 || transaction.hours > 24) {
+        this.errorMessage = 'Количество часов должно быть числом от 0 до 24.';
+        return false;
+      }
+      this.errorMessage = '';
+      return true;
+    },
     addTransaction() {
-      if (this.newTransaction.date && this.newTransaction.hours && this.newTransaction.description && this.newTransaction.task) {
+      if (this.validateTransactionData(this.newTransaction)) {
         this.transactions.push({ ...this.newTransaction });
         this.newTransaction = { date: '', hours: '', description: '', task: '' };
       }
@@ -129,7 +150,7 @@ export default {
       this.editTransactionData = { ...this.transactions[index] };
     },
     saveTransaction(index) {
-      if (this.editTransactionData.date && this.editTransactionData.hours && this.editTransactionData.description && this.editTransactionData.task) {
+      if (this.validateTransactionData(this.editTransactionData)) {
         this.transactions.splice(index, 1, { ...this.editTransactionData });
         this.cancelEdit();
       }
@@ -140,6 +161,7 @@ export default {
     cancelEdit() {
       this.editingIndex = null;
       this.editTransactionData = { date: '', hours: '', description: '', task: '' };
+      this.errorMessage = '';
     },
     transactionClass(hours) {
       if (hours < 8) return 'bg-yellow-100';
