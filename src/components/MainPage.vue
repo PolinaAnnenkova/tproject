@@ -115,29 +115,31 @@
         },
 
     data() {
-      return { currentTab: 'tasks',
-        tasks: [
+        return {
+            currentTab: 'tasks',
+            newСhapter: [ ],
+        tasks: [[
     { name: 'Название1', name_project: 'Проект1', active: true },
     { name: 'Название2', name_project: 'Проект1', active: true},
     { name: 'Название3', name_project: 'Проект2', active: true },
     { name: 'Название4', name_project: 'Проект3', active: false},
-    { name: 'Название5', name_project: 'Проект3', active: true }
+    { name: 'Название5', name_project: 'Проект3', active: true }],[],[],[],[],[]
           ],
 
-     transactions: [
+     transactions: [[
         { date: '2024-01-01', hours: 1, description: 'Описание1', task: 'Задача1' },
         { date: '2024-02-02', hours: 7, description: 'Описание2', task: 'Задача2' },
         { date: '2024-03-03', hours: 2, description: 'Описание3', task: 'Задача3' },
         { date: '2024-04-04', hours: 3, description: 'Описание4', task: 'Задача4' },
         { date: '2024-05-05', hours: 4, description: 'Описание5', task: 'Задача5' },
-        { date: '2024-06-06', hours: 5, description: 'Описание6', task: 'Задача6' },
+        { date: '2024-06-06', hours: 5, description: 'Описание6', task: 'Задача6' }],[],[],[],[],[]
           ],
           projects: [
               { name: 'Название1', code: 1, active: true },
               { name: 'Название2', code: 2, active: true },
               { name: 'Название3', code: 3, active: true },
               { name: 'Название4', code: 4, active: false },
-              { name: 'Название5', code: 5, active: true },
+              { name: 'Название5', code: 5, active: true }
           ],
         employees: [
     { name: 'Мила Степанова'},
@@ -162,8 +164,11 @@
 
     addEmployees() {
         if (this.newEmployees.name ) {
-      this.employees.push({ ...this.newEmployees });
-            this.newEmployees = { name: ''};
+            this.employees.push({ ...this.newEmployees });
+            this.newEmployees = { name: '' };
+            this.tasks.push(this.newСhapter)
+            this.transactions.push(this.newСhapter)
+           
          }   
     },
 

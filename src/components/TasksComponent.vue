@@ -4,7 +4,7 @@
       <main class="flex-1 p-4">
           <div v-if="currentTab === 'transactions'">
               <h2 class="text-2xl mb-4">Список проводок</h2>
-           
+
               <div class="mb-4">
                   <label class="inline-flex items-center">
                       <input type="radio" class="form-radio" v-model="timeFilter" value="all" />
@@ -33,7 +33,7 @@
                       </tr>
                   </thead>
                   <tbody>
-                      <tr v-for="(transaction, index) in filteredTransactions" :key="index" :class="transactionClass(transaction.hours)">
+                      <tr  v-for="(transaction, index) in filteredTransactions" :key="index" :class="transactionClass(transaction.hours)">
                           <td class="px-4 py-2">
                               <input type="date" v-if="editingIndex === index" v-model="editTransactionData.date" class="w-full px-2 py-1 border rounded" />
                               <span v-else>{{ transaction.date }}</span>
@@ -57,6 +57,7 @@
                               <button @click="deleteTransaction(index)" class="text-red-500">🗑️</button>
                           </td>
                       </tr>
+
                       <tr :class="transactionClass(newTransaction.hours)">
                           <td class="px-4 py-2">
                               <input type="date" v-model="newTransaction.date" class="w-full px-2 py-1 border rounded" placeholder="Дата" />
@@ -71,7 +72,7 @@
                               <input v-model="newTransaction.task" class="w-full px-2 py-1 border rounded" placeholder="Задача" />
                           </td>
                           <td class="px-4 py-2 text-center">
-                              <button @click="addTransaction" class="text-blue-500">➕</button>
+                              <button @click="addTransaction()" class="text-blue-500">➕</button>
                           </td>
                       </tr>
                   </tbody>
@@ -79,6 +80,7 @@
               <div v-if="errorMessage" class="mt-4 text-red-500">
                   {{ errorMessage }}
               </div>
+              <h2 class="text-2xl mb-4">{{trIndex}}</h2>
           </div>
       </main>
     </div>
@@ -100,8 +102,8 @@
     return {
       currentTab: 'transactions',
       timeFilter: 'all',
-      selectedDate: null,
-      
+        selectedDate: null,
+       
       newTransaction: { date: '', hours: '', description: '', task: '' },
       editingIndex: null,
       editTransactionData: { date: '', hours: '', description: '', task: '' },
@@ -109,19 +111,19 @@
     };
   },
   computed: {
-    filteredTransactions() {
-      if (this.timeFilter === 'day' && this.selectedDate) {
-        return this.transactions.filter(transaction => transaction.date === this.selectedDate);
+      filteredTransactions() {
+          if (this.timeFilter === 'day' && this.selectedDate) {
+              return this.transactions[this.nowIndex].filter(transaction => transaction.date === this.selectedDate);
       }
       if (this.timeFilter === 'month') {
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
-        return this.transactions.filter(transaction => {
+          return this.transactions[this.nowIndex].filter(transaction => {
           const transactionDate = new Date(transaction.date);
           return transactionDate.getMonth() === currentMonth && transactionDate.getFullYear() === currentYear;
         });
       }
-      return this.transactions;
+          return this.transactions[this.nowIndex];
     }
   },
   methods: {
@@ -142,24 +144,24 @@
       this.errorMessage = '';
       return true;
     },
-    addTransaction() {
+      addTransaction() {
       if (this.validateTransactionData(this.newTransaction)) {
-        this.transactions.push({ ...this.newTransaction });
+          this.transactions[this.nowIndex].push({ ...this.newTransaction });
         this.newTransaction = { date: '', hours: '', description: '', task: '' };
       }
     },
-    editTransaction(index) {
+      editTransaction(index) {
       this.editingIndex = index;
-      this.editTransactionData = { ...this.transactions[index] };
+          this.editTransactionData = { ...this.transactions[this.nowIndex][index] };
     },
-    saveTransaction(index) {
+      saveTransaction(index) {
       if (this.validateTransactionData(this.editTransactionData)) {
-        this.transactions.splice(index, 1, { ...this.editTransactionData });
+          this.transactions[this.nowIndex].splice(index, 1, { ...this.editTransactionData });
         this.cancelEdit();
       }
     },
-    deleteTransaction(index) {
-      this.transactions.splice(index, 1);
+      deleteTransaction(index) {
+          this.transactions[this.nowIndex].splice(index, 1);
     },
     cancelEdit() {
       this.editingIndex = null;
@@ -170,7 +172,7 @@
       if (hours < 8) return 'bg-yellow-100';
       if (hours === 8) return 'bg-green-100';
       if (hours > 8) return 'bg-red-100';
-    }
+      }
   },
   watch: {
     'newTransaction.hours'(newVal) {

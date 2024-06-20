@@ -20,7 +20,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(task, index) in tasks" :key="task.name" class="border-t">
+                            <tr v-for="(task, index) in tasks[nowIndex]" :key="task.name" class="border-t">
                                 <td class="px-4 py-2">
                                     <input v-if="editingIndex === index" v-model="editTaskData.name" class="w-full px-2 py-1 border rounded" />
                                     <span v-else>{{ task.name }}</span>
@@ -36,9 +36,9 @@
 
 
                                 <td class="px-4 py-2 text-center">
-                                    <button @click="editTask(index)" class="text-blue-500 mr-2" v-if="editingIndex !== index">✏️</button>
-                                    <button @click="deleteTask(index)" class="text-red-500 mr-2">🗑️</button>
-                                    <button @click="saveTask(index)" class="text-green-500 mr-2" v-if="editingIndex === index">💾</button>
+                                    <button @click="editTask(index,nowIndex)" class="text-blue-500 mr-2" v-if="editingIndex !== index">✏️</button>
+                                    <button @click="deleteTask(index,nowIndex)" class="text-red-500 mr-2">🗑️</button>
+                                    <button @click="saveTask(index,nowIndex)" class="text-green-500 mr-2" v-if="editingIndex === index">💾</button>
                                     <button @click="cancelEdit()" class="text-red-500 mr-2" v-if="editingIndex === index">✖️</button>
 
                                 </td>
@@ -54,7 +54,7 @@
                                     <input type="checkbox" v-model="newTask.active" />
                                 </td>
                                 <td class="px-4 py-2 text-center">
-                                    <button @click="addTask" class="text-blue-500">➕</button>
+                                    <button @click="addTask(nowIndex)" class="text-blue-500">➕</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -112,23 +112,23 @@
             this.errorMessage = '';
             return true;
         },
-        addTask() {
+        addTask(nowIndex) {
             if (this.validateTaskData(this.newTask)) {
-          this.tasks.push({ ...this.newTask });
+                this.tasks[nowIndex].push({ ...this.newTask });
                 this.newTask = { name: '', name_project: '', active: false };
                 
         }
       },
-        editTask(index) {
+        editTask(index, nowIndex) {
             this.editingIndex = index;
-            this.editTaskData = { ...this.tasks[index] };
+            this.editTaskData = { ...this.tasks[nowIndex][index] };
       },
-        deleteTask(index) {
-            this.tasks.splice(index, 1);
+        deleteTask(index, nowIndex) {
+            this.tasks[nowIndex].splice(index, 1);
       },
-        saveTask(index) {
+        saveTask(index, nowIndex) {
             if (this.validateTaskData(this.editTaskData)) {
-                this.tasks.splice(index, 1, this.editTaskData);
+                this.tasks[nowIndex].splice(index, 1, this.editTaskData);
                 this.cancelEdit();
             }
         },
