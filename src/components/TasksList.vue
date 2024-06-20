@@ -7,6 +7,7 @@
 
                 <div v-if="currentTab === 'tasks'">
                     <h2 class="text-2xl mb-4">Список задач</h2>
+                 
                     <button @click="currentTab = 'addTask'"
                             :class="{'text-blue-500': currentTab === 'addTask', 'bg-blue-300 text-white': currentTab !== 'addTask'}"
                             class="px-4 py-2 rounded mb-2">
@@ -19,7 +20,7 @@
                                 <th class="text-white w-1/3 px-4 py-2">Название задачи</th>
                                 <th class="text-white w-1/6 px-4 py-2">Проект</th>
                                 <th class="text-white w-1/6 px-4 py-2">Активный</th>
-                                
+
                                 <th class="text-white w-1/3 px-4 py-2 text-center">Действия</th>
                             </tr>
                         </thead>
@@ -28,17 +29,17 @@
                                 <td class="text-center px-4 py-2">{{ task.name }}</td>
                                 <td class="text-center px-4 py-2">{{ task.name_project }}</td>
                                 <td class="text-center px-4 py-2">{{ task.active ? 'Да' : 'Нет' }}</td>
-                                
-    <td class="px-4 py-2 text-center">
-        <button @click="editTask(index);currentTab = 'editTask';" class="text-blue-500 mr-2">✏️</button>
-        <button @click="deleteTask(index)" class="text-red-500 mr-2">🗑️</button>
 
-    </td>
-    </tr>
+                                <td class="px-4 py-2 text-center">
+                                    <button @click="editTask(index);currentTab = 'editTask';" class="text-blue-500 mr-2">✏️</button>
+                                    <button @click="deleteTask(index)" class="text-red-500 mr-2">🗑️</button>
 
-    </tbody>
-    </table>
-    </div>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
     <div v-if="currentTab === 'addTask'">
         <h2 class="text-2xl mb-4">Добавление задачи</h2>
         <ul>
@@ -49,6 +50,7 @@
                    required />
         </ul>
         <ul>
+          
             <label for="name">Название проекта:    </label>
             <input type="text"
                    v-model="newTask.name_project"
@@ -111,23 +113,24 @@
 </template>
 
 <script>
-  export default {
+    export default {
+        props: {
+            nowIndex: {
+                type: Number,
+                default: 0
+            },
+            tasks: {
+                type: Array
+            }
+        },
+
     data() {
       return {
-          ed: {
-             type: Number,
-             default: 0
-    },
+          
           currentTab: 'tasks',
 
 
-        tasks: [
-            { name: 'Название1', name_project: 'Проект1', active: true },
-            { name: 'Название2', name_project: 'Проект1', active: true},
-            { name: 'Название3', name_project: 'Проект2', active: true },
-            { name: 'Название4', name_project: 'Проект3', active: false},
-            { name: 'Название5', name_project: 'Проект3', active: true},
-        ],
+        
           newTask: { name: '', name_project: '', active: false}
       };
     },
@@ -150,7 +153,8 @@
         saveTask(index) {
             this.tasks.splice(index, 1, this.newTask);
             this.newProject = { name: '', name_project: '', active: false };
-      }
+        }
+        
     }
   };
 </script>
