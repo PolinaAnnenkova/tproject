@@ -7,106 +7,64 @@
 
                 <div v-if="currentTab === 'tasks'">
                     <h2 class="text-2xl mb-4">Список задач</h2>
-                 
-                    <button @click="currentTab = 'addTask'"
-                            :class="{'text-blue-500': currentTab === 'addTask', 'bg-blue-300 text-white': currentTab !== 'addTask'}"
-                            class="px-4 py-2 rounded mb-2">
-                        Добавить задачу
-                    </button>
+
 
                     <table class="min-w-full bg-white">
                         <thead class="bg-blue-300">
                             <tr>
-                                <th class="text-white w-1/3 px-4 py-2">Название задачи</th>
-                                <th class="text-white w-1/6 px-4 py-2">Проект</th>
-                                <th class="text-white w-1/6 px-4 py-2">Активный</th>
+                                <th class=" w-1/3 px-4 py-2">Название задачи</th>
+                                <th class=" w-1/6 px-4 py-2">Проект</th>
+                                <th class=" w-1/6 px-4 py-2">Активный</th>
 
-                                <th class="text-white w-1/3 px-4 py-2 text-center">Действия</th>
+                                <th class="w-1/3 px-4 py-2 text-center">Действия</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="(task, index) in tasks" :key="task.name" class="border-t">
-                                <td class="text-center px-4 py-2">{{ task.name }}</td>
-                                <td class="text-center px-4 py-2">{{ task.name_project }}</td>
-                                <td class="text-center px-4 py-2">{{ task.active ? 'Да' : 'Нет' }}</td>
+                                <td class="px-4 py-2">
+                                    <input v-if="editingIndex === index" v-model="editTaskData.name" class="w-full px-2 py-1 border rounded" />
+                                    <span v-else>{{ task.name }}</span>
+                                </td>
+                                <td class="px-4 py-2">
+                                    <input v-if="editingIndex === index" v-model="editTaskData.name_project" class="w-full px-2 py-1 border rounded" />
+                                    <span v-else>{{ task.name_project }}</span>
+                                </td>
+                                <td class="px-4 py-2">
+                                    <input type="checkbox" v-if="editingIndex === index" v-model="editTaskData.active" />
+                                    <span v-else>{{ task.active ? 'Да' : 'Нет' }}</span>
+                                </td>
+
 
                                 <td class="px-4 py-2 text-center">
-                                    <button @click="editTask(index);currentTab = 'editTask';" class="text-blue-500 mr-2">✏️</button>
+                                    <button @click="editTask(index)" class="text-blue-500 mr-2" v-if="editingIndex !== index">✏️</button>
                                     <button @click="deleteTask(index)" class="text-red-500 mr-2">🗑️</button>
+                                    <button @click="saveTask(index)" class="text-green-500 mr-2" v-if="editingIndex === index">💾</button>
+                                    <button @click="cancelEdit()" class="text-red-500 mr-2" v-if="editingIndex === index">✖️</button>
 
                                 </td>
                             </tr>
-
+                            <tr>
+                                <td class="px-4 py-2">
+                                    <input v-model="newTask.name" class="w-full px-2 py-1 border rounded" placeholder="Название" />
+                                </td>
+                                <td class="px-4 py-2">
+                                    <input v-model="newTask.name_project" class="w-full px-2 py-1 border rounded" placeholder="Название проекта" />
+                                </td>
+                                <td class="px-4 py-2 text-center">
+                                    <input type="checkbox" v-model="newTask.active" />
+                                </td>
+                                <td class="px-4 py-2 text-center">
+                                    <button @click="addTask" class="text-blue-500">➕</button>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
+                    <div v-if="errorMessage" class="mt-4 text-red-500">
+                        {{ errorMessage }}
+                    </div>
                 </div>
-    <div v-if="currentTab === 'addTask'">
-        <h2 class="text-2xl mb-4">Добавление задачи</h2>
-        <ul>
-            <label for="name">Название задачи:    </label>
-            <input type="text"
-                   v-model="newTask.name"
-                   class=" px-3 py-1 mt-2 border border-gray-300 rounded-lg"
-                   required />
-        </ul>
-        <ul>
-          
-            <label for="name">Название проекта:    </label>
-            <input type="text"
-                   v-model="newTask.name_project"
-                   class=" px-3 py-1 mt-2 border border-gray-300 rounded-lg"
-                   required />
-        </ul>
-        <ul>
-            <label for="name">Активен:    </label>
-            <input type="checkbox" v-model="newTask.active" class="mt-4" />
-        </ul>
-        <nav class="flex space-x-4 mb-4">
-            <button @click="addTask();currentTab = 'tasks';"
-                    :class="{'text-blue-500': currentTab === 'tasks', 'bg-blue-300 text-white': currentTab !== 'tasks'}"
-                    class="px-4 py-2 rounded mb-2 mt-4 space-x-4">
-                Сохранить
-            </button>
-            <button @click="currentTab = 'tasks'"
-                    :class="{'text-blue-500': currentTab === 'tasks', 'bg-blue-300 text-white': currentTab !== 'tasks'}"
-                    class="px-7 py-2 rounded mb-2 mt-4 ">
-                Отмена
-            </button>
-        </nav>
-    </div>
-    <div v-if="currentTab === 'editTask'">
-        <h2 class="text-2xl mb-4">Редактирование задачи</h2>
-        <ul>
-            <label for="name">Название задачи:    </label>
-            <input type="text"
-                   v-model="newTask.name"
-                   class=" px-3 py-1 mt-2 border border-gray-300 rounded-lg" placeholder=""
-                   required />
-        </ul>
-        <ul>
-            <label for="name">Название проекта:    </label>
-            <input type="text"
-                   v-model="newTask.name_project"
-                   class=" px-3 py-1 mt-2 border border-gray-300 rounded-lg"
-                   required />
-        </ul>
-        <ul>
-            <label for="name">Активен:    </label>
-            <input type="checkbox" v-model="newTask.active" class="mt-4" />
-        </ul>
-        <nav class="flex space-x-4 mb-4">
-            <button @click="addTask();currentTab = 'tasks';"
-                    :class="{'text-blue-500': currentTab === 'tasks', 'bg-blue-300 text-white': currentTab !== 'tasks'}"
-                    class="px-4 py-2 rounded mb-2 mt-4 space-x-4">
-                Сохранить
-            </button>
-            <button @click="currentTab = 'tasks'"
-                    :class="{'text-blue-500': currentTab === 'tasks', 'bg-blue-300 text-white': currentTab !== 'tasks'}"
-                    class="px-7 py-2 rounded mb-2 mt-4 ">
-                Отмена
-            </button>
-        </nav>
-    </div>
+    
+    
     </main>
     </div>
     </div>
@@ -129,30 +87,55 @@
           
           currentTab: 'tasks',
 
-
+          editingIndex: null,
+          editTaskData: { name: '', name_project: '', active: false },
+          errorMessage: '',
         
           newTask: { name: '', name_project: '', active: false}
       };
     },
     methods: {
-
+        validateTaskData(task) {
+            if (!task.name || !task.name_project) {
+                this.errorMessage = 'Названия задачи и проекта не могут быть пустыми.';
+                return false;
+            }
+            
+            if (typeof task.name !== 'string') {
+                this.errorMessage = 'Название задачи должно быть текстом.';
+                return false;
+            }
+            if (typeof task.name_project !== 'string') {
+                this.errorMessage = 'Название проекта должно быть текстом.';
+                return false;
+            }
+            this.errorMessage = '';
+            return true;
+        },
         addTask() {
-            if (this.newTask.name && this.newTask.name_project) {
+            if (this.validateTaskData(this.newTask)) {
           this.tasks.push({ ...this.newTask });
                 this.newTask = { name: '', name_project: '', active: false };
                 
         }
       },
         editTask(index) {
-            this.newTask = { ...this.tasks[index] };
-            this.tasks.splice(index, 1);
+            this.editingIndex = index;
+            this.editTaskData = { ...this.tasks[index] };
       },
         deleteTask(index) {
             this.tasks.splice(index, 1);
       },
         saveTask(index) {
-            this.tasks.splice(index, 1, this.newTask);
-            this.newProject = { name: '', name_project: '', active: false };
+            if (this.validateTaskData(this.editTaskData)) {
+                this.tasks.splice(index, 1, this.editTaskData);
+                this.cancelEdit();
+            }
+        },
+        cancelEdit() {
+            this.editingIndex = null;
+            this.editTaskData = { name: '', name_project: '', active: false };
+            this.errorMessage = '';
         }
         
     }
