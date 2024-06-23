@@ -48,7 +48,7 @@
                 <td class="px-4 py-2">
                   <div v-if="editingDate === transaction.date">
                     <select v-model="editTransactionData.task" class="w-full px-2 py-1 border rounded" @change="handleTaskChange">
-                      <option v-for="task in tasks" :key="task" :value="task">{{ task }}</option>
+                      <option v-for="task in tasks" :key="task.name" :value="task.name">{{ task.name }}</option>
                       <option value="new">Добавить новую задачу</option>
                     </select>
                     <input v-if="isEditingNewTask" v-model="newTaskName" class="w-full px-2 py-1 border rounded mt-2" placeholder="Введите название новой задачи" />
@@ -75,7 +75,7 @@
                 <td class="px-4 py-2">
                   <div>
                     <select v-model="newTransaction.task" class="w-full px-2 py-1 border rounded" @change="handleNewTaskChange">
-                      <option v-for="task in tasks" :key="task" :value="task">{{ task }}</option>
+                      <option v-for="task in tasks" :key="task.name" :value="task.name">{{ task.name }}</option>
                       <option value="new">Добавить новую задачу</option>
                     </select>
                     <input v-if="isAddingNewTask" v-model="newTaskName" class="w-full px-2 py-1 border rounded mt-2" placeholder="Введите название новой задачи" />
@@ -178,10 +178,12 @@ export default {
     editTransaction(transaction) {
       this.editingDate = transaction.date;
       this.editTransactionData = { ...transaction };
-      this.isEditingNewTask = false;
-      this.newTaskName = '';
     },
     saveTransaction(date) {
+      if (this.isEditingNewTask && this.newTaskName) {
+        this.addTask(this.newTaskName);
+        this.editTransactionData.task = this.newTaskName;
+      }
       if (this.validateTransactionData(this.editTransactionData)) {
         const index = this.transactions[this.nowIndex].findIndex(transaction => transaction.date === date);
         if (index !== -1) {
