@@ -16,7 +16,7 @@ const routes = [
   {
     path: '/transactions',
     name: 'transactions',
-    component: () => import(/* webpackChunkName: "transactions" */ '../components/TasksComponent.vue')
+    component: () => import(/* webpackChunkName: "transactions" */ '../components/Transactions.vue')
     }
     ,
   {
