@@ -32,7 +32,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(transaction, index) in filteredTransactions" :key="transaction.date" :class="transactionClass(transaction.hours)">
+              <tr v-for="(transaction, index) in filteredTransactions" :key="index" :class="transactionClass(transaction.date)">
                 <td class="px-4 py-2">
                   <input type="date" v-if="editingDate === transaction.date" v-model="editTransactionData.date" class="w-full px-2 py-1 border rounded" />
                   <span v-else>{{ transaction.date }}</span>
@@ -62,7 +62,7 @@
                   <button @click="deleteTransaction(transaction.date)" class="text-red-500">🗑️</button>
                 </td>
               </tr>
-              <tr :class="transactionClass(newTransaction.hours)">
+              <tr :class="transactionClass(newTransaction.date)">
                 <td class="px-4 py-2">
                   <input type="date" v-model="newTransaction.date" class="w-full px-2 py-1 border rounded" placeholder="Дата" />
                 </td>
@@ -143,10 +143,19 @@ export default {
         });
       }
       return this.transactions[this.nowIndex];
+    },
+    transactionsGroupedByDate() {
+      return this.transactions[this.nowIndex].reduce((acc, transaction) => {
+        if (!acc[transaction.date]) {
+          acc[transaction.date] = [];
+        }
+        acc[transaction.date].push(transaction);
+        return acc;
+      }, {});
     }
   },
   methods: {
-    validateTransactionData(transaction) {
+    validateTransactionData(transaction, isNewTransaction = false) {
       const currentDate = new Date().toISOString().split('T')[0];
       if (!transaction.date || !transaction.hours || !transaction.description || (!transaction.task && !this.newTaskName)) {
         this.errorMessage = 'Все поля должны быть заполнены.';
@@ -160,6 +169,16 @@ export default {
         this.errorMessage = 'Количество часов должно быть числом от 0 до 24.';
         return false;
       }
+
+      // Проверка, что общая сумма часов за день не превышает 24
+      const transactionsForDate = this.transactionsGroupedByDate[transaction.date] || [];
+      const totalHours = transactionsForDate.reduce((total, t) => total + (t.date === transaction.date && t !== transaction ? Number(t.hours) : 0), 0);
+      const newTotalHours = totalHours + Number(transaction.hours);
+      if (newTotalHours > 24) {
+        this.errorMessage = 'Общая сумма часов за день не может превышать 24 часа.';
+        return false;
+      }
+
       this.errorMessage = '';
       return true;
     },
@@ -168,7 +187,7 @@ export default {
         this.addTask(this.newTaskName);
         this.newTransaction.task = this.newTaskName;
       }
-      if (this.validateTransactionData(this.newTransaction)) {
+      if (this.validateTransactionData(this.newTransaction, true)) {
         this.transactions[this.nowIndex].push({ ...this.newTransaction });
         this.newTransaction = { date: '', hours: '', description: '', task: '' };
         this.newTaskName = '';
@@ -220,12 +239,15 @@ export default {
         this.isEditingNewTask = false;
       }
     },
-    transactionClass(hours) {
-      if (hours < 8) {
+    transactionClass(date) {
+      const transactionsForDate = this.transactionsGroupedByDate[date] || [];
+      const totalHours = transactionsForDate.reduce((total, transaction) => total + Number(transaction.hours), 0);
+
+      if (totalHours < 8) {
         return 'bg-yellow-200';
-      } else if (hours == 8) {
+      } else if (totalHours === 8) {
         return 'bg-green-200';
-      } else if (hours > 8) {
+      } else if (totalHours > 8) {
         return 'bg-red-200';
       } else {
         return 'bg-gray-200';
