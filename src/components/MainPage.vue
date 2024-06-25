@@ -151,7 +151,10 @@ export default {
       }
     },
     deleteEmployees(index) {
-      this.employees.splice(index, 1);
+        this.employees.splice(index, 1);
+        this.tasks.splice(index, 1);
+        this.transactions.splice(index, 1);
+
     },
     addProject(projectName) {
       const newProject = {

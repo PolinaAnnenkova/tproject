@@ -34,7 +34,7 @@
                     <span v-else>{{ task.active ? 'Да' : 'Нет' }}</span>
                   </td>
                   <td class="px-4 py-2 text-center">
-                    <button @click="editTask(index, nowIndex)" class="text-blue-500 mr-2" v-if="editingIndex !== index">✏️</button>
+                    <button  @click="editTask(index, nowIndex)" class="text-blue-500 mr-2" v-if="editingIndex !== index && task.active===true">✏️</button>
                     <button @click="deleteTask(index, nowIndex)" class="text-red-500 mr-2">🗑️</button>
                     <button @click="saveTask(index, nowIndex)" class="text-green-500 mr-2" v-if="editingIndex === index">💾</button>
                     <button @click="cancelEdit()" class="text-red-500 mr-2" v-if="editingIndex === index">✖️</button>

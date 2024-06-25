@@ -48,7 +48,13 @@
                 <td class="px-4 py-2">
                   <div v-if="editingDate === transaction.date">
                     <select v-model="editTransactionData.task" class="w-full px-2 py-1 border rounded" @change="handleTaskChange">
-                      <option v-for="task in tasks" :key="task.name" :value="task.name">{{ task.name }}</option>
+                        <template v-for="task in tasks" :key="task" :value="task">
+                            <option v-if="task.active">
+
+                                {{ task.name }}
+
+                            </option>
+                        </template>
                       <option value="new">Добавить новую задачу</option>
                     </select>
                     <input v-if="isEditingNewTask" v-model="newTaskName" class="w-full px-2 py-1 border rounded mt-2" placeholder="Введите название новой задачи" />
@@ -74,10 +80,16 @@
                 </td>
                 <td class="px-4 py-2">
                   <div>
-                    <select v-model="newTransaction.task" class="w-full px-2 py-1 border rounded" @change="handleNewTaskChange">
-                      <option v-for="task in tasks" :key="task.name" :value="task.name">{{ task.name }}</option>
-                      <option value="new">Добавить новую задачу</option>
-                    </select>
+                      <select v-model="newTransaction.task" class="w-full px-2 py-1 border rounded" @change="handleNewTaskChange">
+                          <template v-for="task in tasks" :key="task" :value="task">
+                              <option v-if="task.active">
+                              
+                                  {{ task.name }}
+
+                             </option>
+                              </template>
+                              <option value="new">Добавить новую задачу</option>
+                      </select>
                     <input v-if="isAddingNewTask" v-model="newTaskName" class="w-full px-2 py-1 border rounded mt-2" placeholder="Введите название новой задачи" />
                   </div>
                 </td>
@@ -126,13 +138,15 @@ export default {
       errorMessage: '',
       newTaskName: '',
       isAddingNewTask: false,
-      isEditingNewTask: false
+        isEditingNewTask: false,
+        ask: true
     };
   },
   computed: {
+
     filteredTransactions() {
-      if (this.timeFilter === 'day' && this.selectedDate) {
-        return this.transactions[this.nowIndex].filter(transaction => transaction.date === this.selectedDate);
+          if (this.timeFilter === 'day' && this.selectedDate) {
+              return this.transactions[this.nowIndex].filter(transaction => transaction.data === this.selectedDate);
       }
       if (this.timeFilter === 'month') {
         const currentMonth = new Date().getMonth();
@@ -143,7 +157,8 @@ export default {
         });
       }
       return this.transactions[this.nowIndex];
-    },
+      },
+      
     transactionsGroupedByDate() {
       return this.transactions[this.nowIndex].reduce((acc, transaction) => {
         if (!acc[transaction.date]) {
